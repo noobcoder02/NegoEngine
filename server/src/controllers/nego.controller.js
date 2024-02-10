@@ -46,7 +46,7 @@ const postNego = async (req, res) => {
       const nego2 = negos.negos[len-2]; 
       // console.log(nego1);
       // console.log(nego2);
-      result = Math.round(calculateOverallSimilarity(nego1, nego2) * 100);
+      result = Math.floor(calculateOverallSimilarity(nego1, nego2) * 100);
     }
 
     // negos.curr_similarity = result;
@@ -60,16 +60,30 @@ const postNego = async (req, res) => {
       { new: true }
     );
     console.log(negos);
+    console.log(results);
     // Object.keys(nego1).forEach(key => {
     //   console.log(`${key}: ${typeof nego1[key]}`);
     // });
     // console.log(typeof(nego1.declared_price))
     res.status(200).json(result);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
 
+function euclideanDistance(vector1, vector2) {
+  if (vector1.length !== vector2.length) {
+      throw new Error("Vectors must have the same length");
+  }
+
+  let sum = 0;
+  for (let i = 0; i < vector1.length; i++) {
+      sum += Math.pow(vector1[i] - vector2[i], 2);
+  }
+
+  return Math.sqrt(sum);
+}
 
 function calculateOverallSimilarity(order1, order2) {
     const order1Values = [
@@ -90,9 +104,12 @@ function calculateOverallSimilarity(order1, order2) {
         order2.cancel_window*1000,
     ];
 
-    const numericalSimilarity = similarity(order1Values, order2Values);
-    // const numericalSimilarity = levenshtein.get(order1Values, order2Values);
-    console.log(numericalSimilarity);
+    // const numericalSimilarity = similarity(order1Values, order2Values);
+    // // const numericalSimilarity = levenshtein.get(order1Values, order2Values);
+    // console.log(numericalSimilarity);
+
+    const distance = euclideanDistance(order1Values, order2Values);
+    const numericalSimilarity = 1 / (1 + distance); // Using inverse of distance as similarity index
 
     const paymentSimilarity = (order1.payment_collector == order2.payment_collector) ? 1 : 0;
     const settlementSimilarity = (order1.settlement_basis == order2.settlement_basis) ? 1 : 0;

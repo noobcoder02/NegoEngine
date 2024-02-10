@@ -191,7 +191,7 @@ const Nego = () => {
           <div className="w-fit mx-auto mt-4 flex flex-row space-x-10">
             <button
               type="submit"
-              disabled={waitingResponse}
+              // disabled={waitingResponse}
               onClick={handleSubmit}
               className="shadow-md shadow-blue-300 bg-buttonGradient font-medium text-white px-8 py-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-40 hover:scale-105 duration-200"
             >
